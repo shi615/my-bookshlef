@@ -1,0 +1,12 @@
+node_modules
+.next
+.env*
+.git
+.firebase
+coverage
+tests
+specs
+.specify
+.claude
+firebase-debug.log
+firestore-debug.log

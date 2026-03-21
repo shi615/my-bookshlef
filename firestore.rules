@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Shared book catalogue — public read, server-only write
+    match /books/{isbn} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // User shelf entries — owner only
+    match /users/{uid}/bookshelfEntries/{entryId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      allow create: if
+        request.auth != null &&
+        request.auth.uid == uid &&
+        request.resource.data.isbn is string &&
+        request.resource.data.readingStatus in ['want_to_read', 'reading', 'read'] &&
+        request.resource.data.dateAdded != null;
+
+      allow update: if
+        request.auth != null &&
+        request.auth.uid == uid &&
+        request.resource.data.isbn == resource.data.isbn;
+
+      allow delete: if
+        request.auth != null &&
+        request.auth.uid == uid;
+    }
+  }
+}
