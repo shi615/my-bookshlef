@@ -54,18 +54,18 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
       }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <main className="min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto">
         <Link
           href="/bookshelf"
-          className="inline-block mb-6 text-sm text-indigo-600 hover:underline"
+          className="inline-block mb-6 text-sm text-leather hover:underline"
         >
           ← 本棚に戻る
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8">
           {/* Cover */}
-          <div className="aspect-[2/3] bg-gray-100 relative rounded-lg overflow-hidden shadow-sm">
+          <div className="aspect-[2/3] bg-paper relative rounded-lg overflow-hidden border border-line shadow-book">
             {bookData.coverImageUrl ? (
               <Image
                 src={bookData.coverImageUrl}
@@ -74,8 +74,8 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-400 text-sm p-2 text-center">
-                No cover
+              <div className="flex items-center justify-center h-full text-muted text-sm p-2 text-center font-serif">
+                表紙なし
               </div>
             )}
           </div>
@@ -83,7 +83,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
           {/* Info */}
           <div>
             <div className="flex items-start justify-between gap-4 mb-2">
-              <h1 className="text-2xl font-bold leading-tight">{bookData.title}</h1>
+              <h1 className="text-2xl font-bold leading-snug">{bookData.title}</h1>
               <span
                 className={`shrink-0 inline-block text-xs px-2 py-0.5 rounded-full font-medium
                             ${STATUS_COLOURS[entry.readingStatus]}`}
@@ -93,33 +93,33 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
             </div>
 
             {bookData.authors.length > 0 && (
-              <p className="text-gray-600 mb-4">{bookData.authors.join(', ')}</p>
+              <p className="text-muted mb-4">{bookData.authors.join(', ')}</p>
             )}
 
-            <dl className="space-y-1 text-sm text-gray-600 mb-6">
+            <dl className="space-y-1 text-sm text-ink mb-6">
               {bookData.publisher && (
                 <div className="flex gap-2">
-                  <dt className="font-medium text-gray-500 w-20 shrink-0">出版社</dt>
+                  <dt className="font-medium text-muted w-20 shrink-0">出版社</dt>
                   <dd>{bookData.publisher}</dd>
                 </div>
               )}
               {bookData.publishedDate && (
                 <div className="flex gap-2">
-                  <dt className="font-medium text-gray-500 w-20 shrink-0">出版日</dt>
+                  <dt className="font-medium text-muted w-20 shrink-0">出版日</dt>
                   <dd>{bookData.publishedDate}</dd>
                 </div>
               )}
               <div className="flex gap-2">
-                <dt className="font-medium text-gray-500 w-20 shrink-0">ISBN</dt>
+                <dt className="font-medium text-muted w-20 shrink-0">ISBN</dt>
                 <dd>{entry.isbn}</dd>
               </div>
               <div className="flex gap-2">
-                <dt className="font-medium text-gray-500 w-20 shrink-0">追加日</dt>
+                <dt className="font-medium text-muted w-20 shrink-0">追加日</dt>
                 <dd>{entry.dateAdded.toLocaleDateString('ja-JP')}</dd>
               </div>
               {bookData.categories.length > 0 && (
                 <div className="flex gap-2">
-                  <dt className="font-medium text-gray-500 w-20 shrink-0">カテゴリ</dt>
+                  <dt className="font-medium text-muted w-20 shrink-0">カテゴリ</dt>
                   <dd>{bookData.categories.join(', ')}</dd>
                 </div>
               )}
@@ -127,8 +127,8 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
 
             {bookData.description && (
               <div className="mb-8">
-                <h2 className="text-sm font-medium text-gray-700 mb-1">説明</h2>
-                <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">
+                <h2 className="text-sm font-semibold text-ink mb-1">説明</h2>
+                <p className="text-sm text-muted whitespace-pre-line leading-relaxed">
                   {bookData.description}
                 </p>
               </div>

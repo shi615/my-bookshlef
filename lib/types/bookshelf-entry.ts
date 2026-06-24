@@ -27,6 +27,7 @@ export interface ShelfEntryView {
     title: string
     authors: string[]
     coverImageUrl: string | null
+    publishedDate: string | null
     categories: string[]
   }
 }

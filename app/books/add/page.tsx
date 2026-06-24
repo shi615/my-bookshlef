@@ -107,9 +107,9 @@ export default function AddBookPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+    <main className="min-h-screen flex flex-col items-center py-10 px-4">
       <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Add a Book</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">本を追加</h1>
 
         {error && (
           <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-red-700 text-sm">

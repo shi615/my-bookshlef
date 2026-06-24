@@ -26,39 +26,39 @@ export default function DuplicateWarningDialog({
   onCancel,
 }: DuplicateWarningDialogProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 max-w-md w-full">
-      <h2 className="text-lg font-semibold mb-2">Already on Your Shelf</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        <strong>{book.title}</strong> is already in your shelf:
+    <div className="bg-parchment rounded-xl border border-line shadow-book p-6 max-w-md w-full">
+      <h2 className="text-lg font-semibold mb-2">すでに本棚にあります</h2>
+      <p className="text-sm text-muted mb-4">
+        <strong className="text-ink">{book.title}</strong> はすでに本棚に登録されています:
       </p>
 
       <ul className="mb-4 space-y-2">
         {existingEntries.map((e) => (
-          <li key={e.entryId} className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2">
-            Added {new Date(e.dateAdded).toLocaleDateString()} ·{' '}
+          <li key={e.entryId} className="text-sm text-ink bg-paper border border-line rounded px-3 py-2">
+            {new Date(e.dateAdded).toLocaleDateString('ja-JP')} に追加 ·{' '}
             {STATUS_LABELS[e.readingStatus] ?? e.readingStatus}
           </li>
         ))}
       </ul>
 
-      <p className="text-sm text-gray-600 mb-5">Add another copy anyway?</p>
+      <p className="text-sm text-muted mb-5">それでも別の一冊として追加しますか？</p>
 
       <div className="flex gap-3">
         <button
           type="button"
           onClick={onConfirm}
-          className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-white font-medium
-                     hover:bg-indigo-700"
+          className="flex-1 rounded-lg bg-leather px-4 py-2 text-parchment font-medium
+                     hover:bg-leather-dark"
         >
-          Add Another Copy
+          追加する
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700
-                     font-medium hover:bg-gray-50"
+          className="flex-1 rounded-lg border border-line px-4 py-2 text-ink
+                     font-medium hover:bg-paper"
         >
-          Cancel
+          キャンセル
         </button>
       </div>
     </div>

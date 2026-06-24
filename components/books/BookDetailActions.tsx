@@ -82,7 +82,7 @@ export default function BookDetailActions({
 
       {/* Reading status */}
       <div>
-        <label htmlFor="reading-status" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="reading-status" className="block text-sm font-medium text-ink mb-1">
           読書ステータス
         </label>
         <select
@@ -90,8 +90,8 @@ export default function BookDetailActions({
           value={readingStatus}
           disabled={statusSaving}
           onChange={(e) => handleStatusChange(e.target.value as ReadingStatus)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                     focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500
+          className="w-full rounded-lg border border-line bg-parchment px-3 py-2 text-sm
+                     focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass
                      disabled:opacity-50"
         >
           {READING_STATUSES.map((status) => (
@@ -104,7 +104,7 @@ export default function BookDetailActions({
 
       {/* Notes */}
       <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="notes" className="block text-sm font-medium text-ink mb-1">
           メモ
         </label>
         <textarea
@@ -112,23 +112,23 @@ export default function BookDetailActions({
           value={notes}
           rows={4}
           onChange={(e) => setNotes(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                     focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-line bg-parchment px-3 py-2 text-sm
+                     focus:border-brass focus:outline-none focus:ring-1 focus:ring-brass"
           placeholder="感想やメモを書く…"
         />
         <button
           type="button"
           onClick={handleNotesSave}
           disabled={notesSaving || notes === savedNotes}
-          className="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white
-                     hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-2 rounded-lg bg-leather px-4 py-2 text-sm font-medium text-parchment
+                     hover:bg-leather-dark disabled:cursor-not-allowed disabled:opacity-50"
         >
           {notesSaving ? '保存中…' : 'メモを保存'}
         </button>
       </div>
 
       {/* Delete */}
-      <div className="border-t border-gray-200 pt-6">
+      <div className="border-t border-line pt-6">
         <button
           type="button"
           onClick={handleDelete}

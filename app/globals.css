@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    @apply font-serif text-ink;
+  }
+
+  /* Subtle paper grain on the page background */
+  body {
+    background-image: radial-gradient(
+      rgba(139, 58, 47, 0.025) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+  }
+}

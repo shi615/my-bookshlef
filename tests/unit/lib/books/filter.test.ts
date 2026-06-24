@@ -13,6 +13,7 @@ function entry(overrides: Partial<ShelfEntryView> = {}): ShelfEntryView {
       title: 'Sample Book',
       authors: ['Jane Doe'],
       coverImageUrl: null,
+      publishedDate: null,
       categories: [],
     },
     ...overrides,
@@ -30,6 +31,7 @@ const entries: ShelfEntryView[] = [
       title: 'The Pragmatic Programmer',
       authors: ['Andrew Hunt', 'David Thomas'],
       coverImageUrl: null,
+      publishedDate: '1999',
       categories: ['Computers', 'Programming'],
     },
   }),
@@ -43,6 +45,7 @@ const entries: ShelfEntryView[] = [
       title: 'Clean Code',
       authors: ['Robert C. Martin'],
       coverImageUrl: null,
+      publishedDate: '2008',
       categories: ['Computers'],
     },
   }),
@@ -56,6 +59,7 @@ const entries: ShelfEntryView[] = [
       title: 'Norwegian Wood',
       authors: ['Haruki Murakami'],
       coverImageUrl: null,
+      publishedDate: '1987',
       categories: ['Fiction'],
     },
   }),
@@ -143,6 +147,55 @@ describe('sortEntries', () => {
       'The Pragmatic Programmer',
       'Norwegian Wood',
       'Clean Code',
+    ])
+  })
+
+  it('sorts by published date, newest first', () => {
+    const result = sortEntries(entries, 'published_desc')
+    expect(result.map((e) => e.entryId)).toEqual(['b', 'a', 'c'])
+  })
+
+  it('sorts by published date, oldest first', () => {
+    const result = sortEntries(entries, 'published_asc')
+    expect(result.map((e) => e.entryId)).toEqual(['c', 'a', 'b'])
+  })
+
+  it('sorts entries without a published date to the end (newest first)', () => {
+    const withMissing = [
+      ...entries,
+      entry({ entryId: 'd', book: { ...entry().book, publishedDate: null } }),
+    ]
+    const result = sortEntries(withMissing, 'published_desc')
+    expect(result.map((e) => e.entryId)).toEqual(['b', 'a', 'c', 'd'])
+  })
+
+  it('sorts entries without a published date to the end (oldest first)', () => {
+    const withMissing = [
+      ...entries,
+      entry({ entryId: 'd', book: { ...entry().book, publishedDate: null } }),
+    ]
+    const result = sortEntries(withMissing, 'published_asc')
+    expect(result.map((e) => e.entryId)).toEqual(['c', 'a', 'b', 'd'])
+  })
+
+  it('handles legacy entries whose published date is undefined', () => {
+    const legacy = entry({
+      entryId: 'd',
+      // Older shelf entries predate the publishedDate field entirely.
+      book: { ...entry().book, publishedDate: undefined as unknown as string | null },
+    })
+    const withLegacy = [...entries, legacy]
+    expect(sortEntries(withLegacy, 'published_desc').map((e) => e.entryId)).toEqual([
+      'b',
+      'a',
+      'c',
+      'd',
+    ])
+    expect(sortEntries(withLegacy, 'published_asc').map((e) => e.entryId)).toEqual([
+      'c',
+      'a',
+      'b',
+      'd',
     ])
   })
 

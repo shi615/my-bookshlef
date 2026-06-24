@@ -48,8 +48,8 @@ export default function BookConfirmCard({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 max-w-md w-full">
-      <h2 className="text-lg font-semibold mb-4">Confirm Book Details</h2>
+    <div className="bg-parchment rounded-xl border border-line shadow-book p-6 max-w-md w-full">
+      <h2 className="text-lg font-semibold mb-4">本の情報を確認</h2>
 
       <div className="flex gap-4 mb-6">
         {book.coverImageUrl && (
@@ -66,48 +66,48 @@ export default function BookConfirmCard({
 
         <div className="flex-1 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Title</label>
+            <label className="block text-xs font-medium text-muted mb-1">タイトル</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded border border-gray-300 px-2 py-1 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full rounded border border-line bg-paper px-2 py-1 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-brass"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Author(s) <span className="font-normal">(comma-separated)</span>
+            <label className="block text-xs font-medium text-muted mb-1">
+              著者 <span className="font-normal">(カンマ区切り)</span>
             </label>
             <input
               type="text"
               value={authors}
               onChange={(e) => setAuthors(e.target.value)}
-              className="w-full rounded border border-gray-300 px-2 py-1 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full rounded border border-line bg-paper px-2 py-1 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-brass"
             />
           </div>
 
           {book.publishedDate && (
-            <p className="text-xs text-gray-500">Published: {book.publishedDate}</p>
+            <p className="text-xs text-muted">出版: {book.publishedDate}</p>
           )}
         </div>
       </div>
 
       {book.description && (
-        <p className="text-sm text-gray-600 mb-4 line-clamp-3">{book.description}</p>
+        <p className="text-sm text-muted mb-4 line-clamp-3">{book.description}</p>
       )}
 
       {hasEdits && (
-        <p className="text-xs text-amber-600 mb-3">
-          You have unsaved edits.{' '}
+        <p className="text-xs text-brass mb-3">
+          未保存の編集があります。{' '}
           <button
             type="button"
             onClick={handleReset}
             className="underline hover:no-underline"
           >
-            Reset to original
+            元に戻す
           </button>
         </p>
       )}
@@ -117,19 +117,19 @@ export default function BookConfirmCard({
           type="button"
           onClick={handleConfirm}
           disabled={isSaving}
-          className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-white font-medium
-                     hover:bg-indigo-700 disabled:opacity-50"
+          className="flex-1 rounded-lg bg-leather px-4 py-2 text-parchment font-medium
+                     hover:bg-leather-dark disabled:opacity-50"
         >
-          {isSaving ? 'Saving…' : 'Add to Shelf'}
+          {isSaving ? '保存中…' : '本棚に追加'}
         </button>
         <button
           type="button"
           onClick={onCancel}
           disabled={isSaving}
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700
-                     font-medium hover:bg-gray-50 disabled:opacity-50"
+          className="flex-1 rounded-lg border border-line px-4 py-2 text-ink
+                     font-medium hover:bg-paper disabled:opacity-50"
         >
-          Cancel
+          キャンセル
         </button>
       </div>
     </div>

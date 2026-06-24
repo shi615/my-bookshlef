@@ -57,55 +57,55 @@ export default function ManualBookEntryForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 max-w-md w-full">
-      <h2 className="text-lg font-semibold mb-1">Book Not Found</h2>
-      <p className="text-sm text-gray-500 mb-4">
-        ISBN <span className="font-mono text-xs">{isbn}</span> was not found in the catalogue.
-        Enter the details manually.
+    <form onSubmit={handleSubmit} className="bg-parchment rounded-xl border border-line shadow-book p-6 max-w-md w-full">
+      <h2 className="text-lg font-semibold mb-1">本が見つかりません</h2>
+      <p className="text-sm text-muted mb-4">
+        ISBN <span className="font-mono text-xs">{isbn}</span> はカタログに見つかりませんでした。
+        情報を手入力してください。
       </p>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Title <span className="text-red-500">*</span>
+          <label className="block text-sm font-medium text-ink mb-1">
+            タイトル <span className="text-leather">*</span>
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => { setTitle(e.target.value); setErrors((p) => ({ ...p, title: undefined })) }}
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full rounded border border-line bg-paper px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-brass"
           />
           {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Author(s) <span className="text-red-500">*</span>{' '}
-            <span className="font-normal text-gray-400">(comma-separated)</span>
+          <label className="block text-sm font-medium text-ink mb-1">
+            著者 <span className="text-leather">*</span>{' '}
+            <span className="font-normal text-muted">(カンマ区切り)</span>
           </label>
           <input
             type="text"
             value={authors}
             onChange={(e) => { setAuthors(e.target.value); setErrors((p) => ({ ...p, authors: undefined })) }}
-            placeholder="e.g. 村上春樹"
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="例: 村上春樹"
+            className="w-full rounded border border-line bg-paper px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-brass"
           />
           {errors.authors && <p className="text-xs text-red-600 mt-1">{errors.authors}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Cover Image <span className="text-gray-400 font-normal">(optional)</span>
+          <label className="block text-sm font-medium text-ink mb-1">
+            表紙画像 <span className="text-muted font-normal">(任意)</span>
           </label>
           <input
             type="file"
             accept="image/jpeg,image/png"
             onChange={handleCoverChange}
-            className="block text-sm text-gray-600 file:mr-3 file:rounded file:border-0
-                       file:bg-indigo-50 file:px-3 file:py-1 file:text-indigo-700
-                       file:cursor-pointer hover:file:bg-indigo-100"
+            className="block text-sm text-muted file:mr-3 file:rounded file:border-0
+                       file:bg-leather/10 file:px-3 file:py-1 file:text-leather
+                       file:cursor-pointer hover:file:bg-leather/20"
           />
           {coverPreview && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -118,19 +118,19 @@ export default function ManualBookEntryForm({
         <button
           type="submit"
           disabled={isSaving}
-          className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-white font-medium
-                     hover:bg-indigo-700 disabled:opacity-50"
+          className="flex-1 rounded-lg bg-leather px-4 py-2 text-parchment font-medium
+                     hover:bg-leather-dark disabled:opacity-50"
         >
-          {isSaving ? 'Saving…' : 'Add to Shelf'}
+          {isSaving ? '保存中…' : '本棚に追加'}
         </button>
         <button
           type="button"
           onClick={onCancel}
           disabled={isSaving}
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700
-                     font-medium hover:bg-gray-50 disabled:opacity-50"
+          className="flex-1 rounded-lg border border-line px-4 py-2 text-ink
+                     font-medium hover:bg-paper disabled:opacity-50"
         >
-          Back
+          戻る
         </button>
       </div>
     </form>

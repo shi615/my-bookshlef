@@ -2,7 +2,13 @@ import type { ReadingStatus, ShelfEntryView } from '@/lib/types/bookshelf-entry'
 
 export type StatusFilter = ReadingStatus | 'all'
 export type CategoryFilter = string | 'all'
-export type SortOption = 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc'
+export type SortOption =
+  | 'date_desc'
+  | 'date_asc'
+  | 'title_asc'
+  | 'title_desc'
+  | 'published_desc'
+  | 'published_asc'
 
 export interface FilterCriteria {
   query: string
@@ -68,9 +74,36 @@ export function sortEntries(entries: ShelfEntryView[], sort: SortOption): ShelfE
     case 'title_desc':
       sorted.sort((a, b) => b.book.title.localeCompare(a.book.title))
       break
+    case 'published_desc':
+      sorted.sort((a, b) => comparePublished(a, b, 'desc'))
+      break
+    case 'published_asc':
+      sorted.sort((a, b) => comparePublished(a, b, 'asc'))
+      break
   }
 
   return sorted
+}
+
+/**
+ * Compare two entries by published date. Entries without a published date are
+ * always sorted to the end, regardless of direction. Dates are compared as
+ * strings, which orders the ISO-style values Google Books returns (e.g. '2004',
+ * '1987-05', '2020-01-15') chronologically.
+ */
+function comparePublished(
+  a: ShelfEntryView,
+  b: ShelfEntryView,
+  direction: 'asc' | 'desc'
+): number {
+  // Treat null, undefined and empty strings alike as "no date" so older shelf
+  // entries or cached books missing the field still sort to the end safely.
+  const pa = a.book.publishedDate || null
+  const pb = b.book.publishedDate || null
+  if (pa === null && pb === null) return 0
+  if (pa === null) return 1
+  if (pb === null) return -1
+  return direction === 'asc' ? pa.localeCompare(pb) : pb.localeCompare(pa)
 }
 
 /**

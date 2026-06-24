@@ -19,12 +19,14 @@ async function getShelfEntries(uid: string): Promise<ShelfEntryView[]> {
             title: entry.titleOverride ?? book.title,
             authors: entry.authorsOverride ?? book.authors,
             coverImageUrl: entry.coverImageUrlOverride ?? book.coverImageUrl,
+            publishedDate: book.publishedDate,
             categories: book.categories ?? [],
           }
         : {
             title: entry.titleOverride ?? '(Unknown title)',
             authors: entry.authorsOverride ?? [],
             coverImageUrl: entry.coverImageUrlOverride ?? null,
+            publishedDate: null,
             categories: [],
           }
 
@@ -55,16 +57,19 @@ export default async function BookshelfPage() {
   const entries = await getShelfEntries(session.uid)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <main className="min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">My Bookshelf</h1>
+        <div className="flex items-end justify-between gap-4 mb-8 pb-5 border-b border-line">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">My Bookshelf</h1>
+            <p className="mt-1 text-sm text-muted">あなたの書斎</p>
+          </div>
           <Link
             href="/books/add"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-white font-medium
-                       hover:bg-indigo-700"
+            className="shrink-0 rounded-lg bg-leather px-4 py-2 text-parchment font-medium
+                       shadow-sm transition-colors hover:bg-leather-dark"
           >
-            + Add Book
+            ＋ 本を追加
           </Link>
         </div>
 

@@ -66,10 +66,10 @@ export default function ISBNScanner({ onScanComplete, onError }: ISBNScannerProp
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6">
-      <h2 className="text-xl font-semibold">Scan a Barcode</h2>
-      <p className="text-sm text-gray-500 text-center">
-        Take a photo or upload an image of the book&apos;s ISBN barcode.
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-line bg-parchment shadow-book p-6">
+      <h2 className="text-xl font-semibold">バーコードをスキャン</h2>
+      <p className="text-sm text-muted text-center">
+        本の ISBN バーコードを撮影するか、画像をアップロードしてください。
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
@@ -78,10 +78,10 @@ export default function ISBNScanner({ onScanComplete, onError }: ISBNScannerProp
           type="button"
           onClick={() => cameraInputRef.current?.click()}
           disabled={isScanning}
-          className="flex-1 rounded-lg bg-indigo-600 px-4 py-3 text-white font-medium
-                     hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 rounded-lg bg-leather px-4 py-3 text-parchment font-medium
+                     hover:bg-leather-dark disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          📷 Take Photo
+          📷 撮影する
         </button>
 
         {/* File upload */}
@@ -89,11 +89,11 @@ export default function ISBNScanner({ onScanComplete, onError }: ISBNScannerProp
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isScanning}
-          className="flex-1 rounded-lg border-2 border-indigo-600 px-4 py-3
-                     text-indigo-600 font-medium hover:bg-indigo-50
+          className="flex-1 rounded-lg border-2 border-leather px-4 py-3
+                     text-leather font-medium hover:bg-leather/5
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Upload Image
+          画像を選ぶ
         </button>
       </div>
 
@@ -115,9 +115,9 @@ export default function ISBNScanner({ onScanComplete, onError }: ISBNScannerProp
       />
 
       {isScanning && (
-        <div className="flex items-center gap-2 text-gray-600">
+        <div className="flex items-center gap-2 text-muted">
           <span className="animate-spin">⟳</span>
-          <span>Scanning barcode…</span>
+          <span>スキャン中…</span>
         </div>
       )}
     </div>
