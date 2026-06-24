@@ -12,6 +12,25 @@ export interface BookshelfEntry {
   coverImageUrlOverride?: string
 }
 
+/**
+ * A bookshelf entry enriched with book metadata, shaped for rendering.
+ * `dateAdded` is an ISO string so it can be passed from a server component
+ * to a client component without serialisation issues.
+ */
+export interface ShelfEntryView {
+  entryId: string
+  isbn: string
+  readingStatus: ReadingStatus
+  dateAdded: string // ISO string
+  notes: string
+  book: {
+    title: string
+    authors: string[]
+    coverImageUrl: string | null
+    categories: string[]
+  }
+}
+
 export interface CreateBookshelfEntryInput {
   isbn: string
   notes?: string
