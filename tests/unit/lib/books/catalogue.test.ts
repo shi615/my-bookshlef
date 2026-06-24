@@ -3,7 +3,7 @@ import { lookupBookByIsbn } from '@/lib/books/catalogue'
 
 // Mock firebase-admin Firestore
 vi.mock('@/lib/firebase/admin', () => ({
-  adminApp: {},
+  adminApp: vi.fn(() => ({})),
 }))
 
 vi.mock('firebase-admin/firestore', () => {

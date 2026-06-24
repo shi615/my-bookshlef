@@ -31,7 +31,7 @@ vi.mock('@/lib/auth/session', () => ({
 
 function makeMultipartRequest(imageData: Buffer, mimeType: string): NextRequest {
   const formData = new FormData()
-  const blob = new Blob([imageData], { type: mimeType })
+  const blob = new Blob([new Uint8Array(imageData)], { type: mimeType })
   formData.append('image', blob, 'barcode.jpg')
 
   return new NextRequest('http://localhost:3000/api/books/scan', {

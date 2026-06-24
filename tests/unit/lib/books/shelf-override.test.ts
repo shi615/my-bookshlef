@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock firebase-admin
-vi.mock('@/lib/firebase/admin', () => ({ adminApp: {} }))
+vi.mock('@/lib/firebase/admin', () => ({ adminApp: vi.fn(() => ({})) }))
 vi.mock('firebase-admin/firestore', () => ({
   getFirestore: vi.fn(),
   FieldValue: { serverTimestamp: vi.fn(() => 'SERVER_TIMESTAMP') },

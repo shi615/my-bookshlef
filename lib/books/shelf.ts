@@ -78,6 +78,60 @@ export async function addBookshelfEntry(
 }
 
 /**
+ * Fetch a single bookshelf entry by its id. Returns null if it does not exist.
+ */
+export async function getBookshelfEntryById(
+  uid: string,
+  entryId: string
+): Promise<BookshelfEntry | null> {
+  const doc = await entriesCollection(uid).doc(entryId).get()
+  if (!doc.exists) {
+    return null
+  }
+  return toEntry(doc.id, doc.data()!)
+}
+
+/**
+ * Update the reading status and/or notes of an existing entry.
+ * Returns the updated entry, or null if the entry does not exist.
+ */
+export async function updateBookshelfEntry(
+  uid: string,
+  entryId: string,
+  patch: { readingStatus?: ReadingStatus; notes?: string }
+): Promise<BookshelfEntry | null> {
+  const docRef = entriesCollection(uid).doc(entryId)
+  const existing = await docRef.get()
+  if (!existing.exists) {
+    return null
+  }
+
+  const updateData: Record<string, unknown> = {
+    updatedAt: FieldValue.serverTimestamp(),
+  }
+  if (patch.readingStatus !== undefined) updateData.readingStatus = patch.readingStatus
+  if (patch.notes !== undefined) updateData.notes = patch.notes
+
+  await docRef.update(updateData)
+  const updated = await docRef.get()
+  return toEntry(docRef.id, updated.data()!)
+}
+
+/**
+ * Delete a bookshelf entry. Returns true if it existed and was deleted,
+ * false if no entry with the given id exists.
+ */
+export async function deleteBookshelfEntry(uid: string, entryId: string): Promise<boolean> {
+  const docRef = entriesCollection(uid).doc(entryId)
+  const existing = await docRef.get()
+  if (!existing.exists) {
+    return false
+  }
+  await docRef.delete()
+  return true
+}
+
+/**
  * List all bookshelf entries for a user, optionally filtered by reading status.
  */
 export async function getBookshelfEntries(

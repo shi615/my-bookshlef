@@ -6,11 +6,13 @@ import { verifySessionCookieValue } from '@/lib/auth/session'
 import { getBookshelfEntries } from '@/lib/books/shelf'
 import { lookupBookByIsbn } from '@/lib/books/catalogue'
 import { isBookFound } from '@/lib/types/book'
+import { STATUS_LABELS, STATUS_COLOURS } from '@/lib/books/reading-status'
+import type { ReadingStatus } from '@/lib/types/bookshelf-entry'
 
 interface ShelfEntry {
   entryId: string
   isbn: string
-  readingStatus: 'want_to_read' | 'reading' | 'read'
+  readingStatus: ReadingStatus
   dateAdded: string
   notes: string
   book: {
@@ -18,18 +20,6 @@ interface ShelfEntry {
     authors: string[]
     coverImageUrl: string | null
   }
-}
-
-const STATUS_LABELS: Record<ShelfEntry['readingStatus'], string> = {
-  want_to_read: 'Want to Read',
-  reading: 'Reading',
-  read: 'Read',
-}
-
-const STATUS_COLOURS: Record<ShelfEntry['readingStatus'], string> = {
-  want_to_read: 'bg-gray-100 text-gray-700',
-  reading: 'bg-blue-100 text-blue-700',
-  read: 'bg-green-100 text-green-700',
 }
 
 async function getShelfEntries(uid: string): Promise<ShelfEntry[]> {
@@ -103,7 +93,12 @@ export default async function BookshelfPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
             {entries.map((entry) => (
-              <div key={entry.entryId} className="bg-white rounded-lg shadow-sm overflow-hidden">
+              <Link
+                key={entry.entryId}
+                href={`/bookshelf/${entry.entryId}`}
+                className="bg-white rounded-lg shadow-sm overflow-hidden block
+                           hover:shadow-md transition-shadow"
+              >
                 <div className="aspect-[2/3] bg-gray-100 relative">
                   {entry.book.coverImageUrl ? (
                     <Image
@@ -132,7 +127,7 @@ export default async function BookshelfPage() {
                     {STATUS_LABELS[entry.readingStatus]}
                   </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
