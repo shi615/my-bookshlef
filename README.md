@@ -107,11 +107,73 @@ npm run dev
 
 ## ☁️ デプロイ
 
-Cloud Build と `Dockerfile` を用いて Cloud Run へデプロイします。
+Cloud Build で `Dockerfile` をビルドして Artifact Registry に push し、その後 Cloud Run へデプロイします。
+
+> ⚠️ `cloudbuild.yaml` は **イメージのビルドと push までしか行いません**（Cloud Run へのデプロイステップは含まれていません）。ビルドとデプロイの 2 ステップが必要です。
+
+### 前提（初回のみ）
+
+- `gcloud` CLI がインストール済みで、デプロイ先プロジェクトを選択していること。
+
+  ```bash
+  gcloud auth login
+  gcloud config set project my-bookshelf-prod
+  ```
+
+- 必要な API が有効化されていること（Cloud Build / Cloud Run / Artifact Registry / Secret Manager / Vertex AI）。
+
+  ```bash
+  gcloud services enable \
+    cloudbuild.googleapis.com \
+    run.googleapis.com \
+    artifactregistry.googleapis.com \
+    secretmanager.googleapis.com \
+    aiplatform.googleapis.com
+  ```
+
+- イメージの push 先 Artifact Registry リポジトリが作成済みであること。
+
+  ```bash
+  gcloud artifacts repositories create my-bookshelf \
+    --repository-format=docker \
+    --location=asia-northeast1
+  ```
+
+- サーバー専用シークレットを Secret Manager に登録済みであること（リポジトリには含めません）。
+
+  ```bash
+  printf '%s' "$FIREBASE_ADMIN_PRIVATE_KEY" | gcloud secrets create FIREBASE_ADMIN_PRIVATE_KEY --data-file=-
+  printf '%s' "$GOOGLE_BOOKS_API_KEY"       | gcloud secrets create GOOGLE_BOOKS_API_KEY       --data-file=-
+  ```
+
+### 1. イメージのビルド & push
+
+`NEXT_PUBLIC_*` の値はクライアントバンドルにビルド時に焼き込まれるため、`--substitutions` で渡す必要があります（`cloudbuild.yaml` 側にデフォルト値はありません）。
 
 ```bash
-gcloud builds submit --config cloudbuild.yaml
+gcloud builds submit --config cloudbuild.yaml \
+  --substitutions=\
+_NEXT_PUBLIC_FIREBASE_API_KEY=<firebase-api-key>,\
+_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=my-bookshelf-prod.firebaseapp.com,\
+_NEXT_PUBLIC_FIREBASE_PROJECT_ID=my-bookshelf-prod
 ```
+
+ビルドされたイメージは `asia-northeast1-docker.pkg.dev/my-bookshelf-prod/my-bookshelf/app` に push されます。
+
+### 2. Cloud Run へデプロイ
+
+サーバー専用の環境変数とシークレットはここで設定します（`NEXT_PUBLIC_*` はイメージに焼き込み済みなので不要です）。
+
+```bash
+gcloud run deploy my-bookshelf \
+  --image=asia-northeast1-docker.pkg.dev/my-bookshelf-prod/my-bookshelf/app \
+  --region=asia-northeast1 \
+  --allow-unauthenticated \
+  --set-env-vars=GOOGLE_CLOUD_PROJECT=my-bookshelf-prod,VERTEX_AI_LOCATION=asia-northeast1,FIREBASE_ADMIN_CLIENT_EMAIL=<admin-client-email> \
+  --set-secrets=FIREBASE_ADMIN_PRIVATE_KEY=FIREBASE_ADMIN_PRIVATE_KEY:latest,GOOGLE_BOOKS_API_KEY=GOOGLE_BOOKS_API_KEY:latest
+```
+
+> 💡 サービス名（`my-bookshelf`）・リージョン・公開設定（`--allow-unauthenticated`）は環境に合わせて調整してください。Cloud Run のサービスアカウントには Vertex AI・Firestore・Cloud Storage へのアクセス権限が必要です。
 
 ## 🧪 テスト
 
