@@ -4,6 +4,7 @@ import type {
   BookshelfEntry,
   CreateBookshelfEntryInput,
   ReadingStatus,
+  UpdateBookshelfEntryInput,
 } from '@/lib/types/bookshelf-entry'
 
 function entriesCollection(uid: string) {
@@ -28,6 +29,7 @@ function toEntry(id: string, data: FirebaseFirestore.DocumentData): BookshelfEnt
     titleOverride: data.titleOverride as string | undefined,
     authorsOverride: data.authorsOverride as string[] | undefined,
     coverImageUrlOverride: data.coverImageUrlOverride as string | undefined,
+    descriptionOverride: data.descriptionOverride as string | undefined,
   }
 }
 
@@ -92,13 +94,14 @@ export async function getBookshelfEntryById(
 }
 
 /**
- * Update the reading status and/or notes of an existing entry.
- * Returns the updated entry, or null if the entry does not exist.
+ * Update an existing entry. Scalar fields are set directly; for the override
+ * fields, a value sets the override while `null` clears it (reverting to the
+ * catalogue value). Returns the updated entry, or null if it does not exist.
  */
 export async function updateBookshelfEntry(
   uid: string,
   entryId: string,
-  patch: { readingStatus?: ReadingStatus; notes?: string }
+  patch: UpdateBookshelfEntryInput
 ): Promise<BookshelfEntry | null> {
   const docRef = entriesCollection(uid).doc(entryId)
   const existing = await docRef.get()
@@ -111,6 +114,19 @@ export async function updateBookshelfEntry(
   }
   if (patch.readingStatus !== undefined) updateData.readingStatus = patch.readingStatus
   if (patch.notes !== undefined) updateData.notes = patch.notes
+
+  // Override fields: null clears the override, any other value sets it.
+  const overrideKeys = [
+    'titleOverride',
+    'authorsOverride',
+    'coverImageUrlOverride',
+    'descriptionOverride',
+  ] as const
+  for (const key of overrideKeys) {
+    const value = patch[key]
+    if (value === undefined) continue
+    updateData[key] = value === null ? FieldValue.delete() : value
+  }
 
   await docRef.update(updateData)
   const updated = await docRef.get()

@@ -158,6 +158,85 @@ describe('PATCH /api/books/shelf/[entryId]', () => {
 
     expect(response.status).toBe(404)
   })
+
+  it('passes override fields through to the shelf service', async () => {
+    const { updateBookshelfEntry } = await import('@/lib/books/shelf')
+    vi.mocked(updateBookshelfEntry).mockResolvedValue({
+      entryId: 'entry-abc',
+      isbn: '9784101092058',
+      readingStatus: 'reading',
+      dateAdded: new Date('2026-03-21'),
+      updatedAt: new Date('2026-03-22'),
+      notes: '',
+      titleOverride: 'カスタムタイトル',
+      authorsOverride: ['著者A', '著者B'],
+      coverImageUrlOverride: 'https://example.com/cover.jpg',
+      descriptionOverride: 'カスタム説明',
+    })
+
+    const request = new NextRequest('http://localhost:3000/api/books/shelf/entry-abc', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        titleOverride: '  カスタムタイトル  ',
+        authorsOverride: ['著者A', ' 著者B ', ''],
+        coverImageUrlOverride: 'https://example.com/cover.jpg',
+        descriptionOverride: 'カスタム説明',
+      }),
+    })
+    const response = await PATCH(request, makeParams('entry-abc'))
+
+    expect(response.status).toBe(200)
+    expect(updateBookshelfEntry).toHaveBeenCalledWith('test-user-123', 'entry-abc', {
+      titleOverride: 'カスタムタイトル',
+      authorsOverride: ['著者A', '著者B'],
+      coverImageUrlOverride: 'https://example.com/cover.jpg',
+      descriptionOverride: 'カスタム説明',
+    })
+  })
+
+  it('clears overrides when given empty values', async () => {
+    const { updateBookshelfEntry } = await import('@/lib/books/shelf')
+    vi.mocked(updateBookshelfEntry).mockResolvedValue({
+      entryId: 'entry-abc',
+      isbn: '9784101092058',
+      readingStatus: 'reading',
+      dateAdded: new Date('2026-03-21'),
+      updatedAt: new Date('2026-03-22'),
+      notes: '',
+    })
+
+    const request = new NextRequest('http://localhost:3000/api/books/shelf/entry-abc', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        titleOverride: '   ',
+        authorsOverride: [],
+        coverImageUrlOverride: '',
+        descriptionOverride: '',
+      }),
+    })
+    const response = await PATCH(request, makeParams('entry-abc'))
+
+    expect(response.status).toBe(200)
+    expect(updateBookshelfEntry).toHaveBeenCalledWith('test-user-123', 'entry-abc', {
+      titleOverride: null,
+      authorsOverride: null,
+      coverImageUrlOverride: null,
+      descriptionOverride: null,
+    })
+  })
+
+  it('returns 400 when authorsOverride is not an array', async () => {
+    const request = new NextRequest('http://localhost:3000/api/books/shelf/entry-abc', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authorsOverride: 'not-an-array' }),
+    })
+    const response = await PATCH(request, makeParams('entry-abc'))
+
+    expect(response.status).toBe(400)
+  })
 })
 
 describe('DELETE /api/books/shelf/[entryId]', () => {

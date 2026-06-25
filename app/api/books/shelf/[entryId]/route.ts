@@ -8,7 +8,7 @@ import {
 import { lookupBookByIsbn } from '@/lib/books/catalogue'
 import { isBookFound } from '@/lib/types/book'
 import { READING_STATUSES } from '@/lib/books/reading-status'
-import type { ReadingStatus } from '@/lib/types/bookshelf-entry'
+import type { UpdateBookshelfEntryInput } from '@/lib/types/bookshelf-entry'
 
 type RouteContext = { params: Promise<{ entryId: string }> }
 
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         coverImageUrl: entry.coverImageUrlOverride ?? book.coverImageUrl,
         publisher: book.publisher,
         publishedDate: book.publishedDate,
-        description: book.description,
+        description: entry.descriptionOverride ?? book.description,
         categories: book.categories,
       }
     : {
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         coverImageUrl: entry.coverImageUrlOverride ?? null,
         publisher: null,
         publishedDate: null,
-        description: null,
+        description: entry.descriptionOverride ?? null,
         categories: [],
       }
 
@@ -73,17 +73,24 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { readingStatus, notes } = body as { readingStatus?: unknown; notes?: unknown }
-  const patch: { readingStatus?: ReadingStatus; notes?: string } = {}
+  const {
+    readingStatus,
+    notes,
+    titleOverride,
+    authorsOverride,
+    coverImageUrlOverride,
+    descriptionOverride,
+  } = body as Record<string, unknown>
+  const patch: UpdateBookshelfEntryInput = {}
 
   if (readingStatus !== undefined) {
     if (
       typeof readingStatus !== 'string' ||
-      !READING_STATUSES.includes(readingStatus as ReadingStatus)
+      !READING_STATUSES.includes(readingStatus as UpdateBookshelfEntryInput['readingStatus'] & string)
     ) {
       return NextResponse.json({ error: 'Invalid readingStatus' }, { status: 400 })
     }
-    patch.readingStatus = readingStatus as ReadingStatus
+    patch.readingStatus = readingStatus as UpdateBookshelfEntryInput['readingStatus']
   }
 
   if (notes !== undefined) {
@@ -93,7 +100,32 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     patch.notes = notes
   }
 
-  if (patch.readingStatus === undefined && patch.notes === undefined) {
+  // String override fields: an empty/blank string clears the override (null).
+  for (const [key, value] of [
+    ['titleOverride', titleOverride],
+    ['coverImageUrlOverride', coverImageUrlOverride],
+    ['descriptionOverride', descriptionOverride],
+  ] as const) {
+    if (value === undefined) continue
+    if (value !== null && typeof value !== 'string') {
+      return NextResponse.json({ error: `${key} must be a string` }, { status: 400 })
+    }
+    const trimmed = typeof value === 'string' ? value.trim() : ''
+    patch[key] = trimmed === '' ? null : trimmed
+  }
+
+  // authorsOverride: an array of names, or an empty array to clear.
+  if (authorsOverride !== undefined) {
+    if (authorsOverride !== null && !Array.isArray(authorsOverride)) {
+      return NextResponse.json({ error: 'authorsOverride must be an array' }, { status: 400 })
+    }
+    const authors = Array.isArray(authorsOverride)
+      ? authorsOverride.map((a) => (typeof a === 'string' ? a.trim() : '')).filter(Boolean)
+      : []
+    patch.authorsOverride = authors.length === 0 ? null : authors
+  }
+
+  if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'No updatable fields provided' }, { status: 400 })
   }
 

@@ -10,6 +10,20 @@ export interface BookshelfEntry {
   titleOverride?: string
   authorsOverride?: string[]
   coverImageUrlOverride?: string
+  descriptionOverride?: string
+}
+
+/**
+ * Fields accepted by `updateBookshelfEntry`. For the override fields, a value
+ * sets the override, while `null` clears it (reverting to the catalogue value).
+ */
+export interface UpdateBookshelfEntryInput {
+  readingStatus?: ReadingStatus
+  notes?: string
+  titleOverride?: string | null
+  authorsOverride?: string[] | null
+  coverImageUrlOverride?: string | null
+  descriptionOverride?: string | null
 }
 
 /**

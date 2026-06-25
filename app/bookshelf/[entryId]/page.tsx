@@ -8,6 +8,7 @@ import { lookupBookByIsbn } from '@/lib/books/catalogue'
 import { isBookFound } from '@/lib/types/book'
 import { STATUS_LABELS, STATUS_COLOURS } from '@/lib/books/reading-status'
 import BookDetailActions from '@/components/books/BookDetailActions'
+import BookDetailEdit from '@/components/books/BookDetailEdit'
 
 interface BookDetailPageProps {
   params: Promise<{ entryId: string }>
@@ -40,7 +41,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
         coverImageUrl: entry.coverImageUrlOverride ?? book.coverImageUrl,
         publisher: book.publisher,
         publishedDate: book.publishedDate,
-        description: book.description,
+        description: entry.descriptionOverride ?? book.description,
         categories: book.categories,
       }
     : {
@@ -49,7 +50,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
         coverImageUrl: entry.coverImageUrlOverride ?? null,
         publisher: null,
         publishedDate: null,
-        description: null,
+        description: entry.descriptionOverride ?? null,
         categories: [] as string[],
       }
 
@@ -134,11 +135,21 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               </div>
             )}
 
-            <BookDetailActions
+            <BookDetailEdit
               entryId={entry.entryId}
-              initialReadingStatus={entry.readingStatus}
-              initialNotes={entry.notes}
+              initialTitle={bookData.title}
+              initialAuthors={bookData.authors}
+              initialCoverImageUrl={bookData.coverImageUrl}
+              initialDescription={bookData.description}
             />
+
+            <div className="mt-8">
+              <BookDetailActions
+                entryId={entry.entryId}
+                initialReadingStatus={entry.readingStatus}
+                initialNotes={entry.notes}
+              />
+            </div>
           </div>
         </div>
       </div>
